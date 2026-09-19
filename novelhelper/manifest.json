@@ -1,11 +1,11 @@
 {
-    "name": "one_writer",
-    "short_name": "one_writer",
+    "name": "novelheler",
+    "short_name": "novelheler",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "OneWriter writing assistant",
+    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
