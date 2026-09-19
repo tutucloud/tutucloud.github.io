@@ -6,7 +6,7 @@
   <meta name="description" content="Tu-X — 项目展示与在线工具">
   <title>Tu-X</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./assets/style.css?v=e7e5850f">
+  <link rel="stylesheet" href="./assets/style.css?v=f416c741">
 </head>
 <body>
   <div class="bg-glow" aria-hidden="true"></div>
@@ -78,6 +78,15 @@
           <button class="tool-tab is-active" role="tab" data-tool="json" data-i18n="tools.json.name"></button>
           <button class="tool-tab" role="tab" data-tool="base64" data-i18n="tools.base64.name"></button>
           <button class="tool-tab" role="tab" data-tool="hash" data-i18n="tools.hash.name"></button>
+          <button class="tool-tab" role="tab" data-tool="url" data-i18n="tools.url.name"></button>
+          <button class="tool-tab" role="tab" data-tool="timestamp" data-i18n="tools.ts.name"></button>
+          <button class="tool-tab" role="tab" data-tool="uuid" data-i18n="tools.uuid.name"></button>
+          <button class="tool-tab" role="tab" data-tool="text" data-i18n="tools.text.name"></button>
+          <button class="tool-tab" role="tab" data-tool="color" data-i18n="tools.color.name"></button>
+          <button class="tool-tab" role="tab" data-tool="diff" data-i18n="tools.diff.name"></button>
+          <button class="tool-tab" role="tab" data-tool="regex" data-i18n="tools.regex.name"></button>
+          <button class="tool-tab" role="tab" data-tool="qr" data-i18n="tools.qr.name"></button>
+          <button class="tool-tab" role="tab" data-tool="minify" data-i18n="tools.minify.name"></button>
         </div>
 
         <!-- JSON formatter -->
@@ -129,6 +138,153 @@
           </div>
           <div id="hashResults" class="hash-results"></div>
         </div>
+
+        <!-- URL 编解码 -->
+        <div class="tool-panel" data-panel="url">
+          <div class="tool-two-col">
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.url.encodeInput"></label>
+              <textarea id="urlPlain" class="tool-textarea" spellcheck="false"></textarea>
+              <div class="tool-actions">
+                <button class="btn btn-primary btn-sm" id="urlEncBtn" data-i18n="tools.url.encode"></button>
+              </div>
+            </div>
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.url.decodeInput"></label>
+              <textarea id="urlEncoded" class="tool-textarea" spellcheck="false"></textarea>
+              <div class="tool-actions">
+                <button class="btn btn-ghost btn-sm" id="urlDecBtn" data-i18n="tools.url.decode"></button>
+                <button class="btn btn-ghost btn-sm" id="urlCopyBtn" data-i18n="common.copy"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 时间戳 -->
+        <div class="tool-panel" data-panel="timestamp">
+          <div class="tool-two-col">
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.ts.toDate"></label>
+              <input id="tsInput" class="tool-input" placeholder="1729440000 / 1729440000000" spellcheck="false">
+              <div class="tool-actions"><button class="btn btn-primary btn-sm" id="tsToDateBtn" data-i18n="tools.ts.convert"></button></div>
+              <pre id="tsDateOut" class="tool-pre" style="min-height:84px"></pre>
+            </div>
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.ts.toTs"></label>
+              <input id="dateInput" class="tool-input" placeholder="2026-09-20 12:00:00" spellcheck="false">
+              <div class="tool-actions">
+                <button class="btn btn-primary btn-sm" id="dateToTsBtn" data-i18n="tools.ts.convert"></button>
+                <button class="btn btn-ghost btn-sm" id="tsNowBtn" data-i18n="tools.ts.now"></button>
+              </div>
+              <pre id="tsTsOut" class="tool-pre" style="min-height:84px"></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- UUID -->
+        <div class="tool-panel" data-panel="uuid">
+          <div class="tool-actions" style="margin-top:0">
+            <button class="btn btn-primary btn-sm" id="uuidBtn" data-i18n="tools.uuid.generate"></button>
+            <button class="btn btn-ghost btn-sm" id="uuidCopyBtn" data-i18n="common.copy"></button>
+          </div>
+          <pre id="uuidOut" class="tool-pre" style="min-height:120px"></pre>
+        </div>
+
+        <!-- 文本工具 -->
+        <div class="tool-panel" data-panel="text">
+          <div class="tool-two-col">
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.text.input"></label>
+              <textarea id="textInput" class="tool-textarea" spellcheck="false"></textarea>
+              <div class="tool-actions">
+                <button class="btn btn-primary btn-sm" id="textDedupBtn" data-i18n="tools.text.dedup"></button>
+                <button class="btn btn-ghost btn-sm" id="textSortBtn" data-i18n="tools.text.sort"></button>
+                <button class="btn btn-ghost btn-sm" id="textTrimBtn" data-i18n="tools.text.trim"></button>
+              </div>
+            </div>
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.text.output"></label>
+              <textarea id="textOutput" class="tool-textarea" spellcheck="false"></textarea>
+              <div class="tool-actions">
+                <button class="btn btn-ghost btn-sm" id="textCopyBtn" data-i18n="common.copy"></button>
+                <span class="text-stats" id="textStats"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 颜色工具 -->
+        <div class="tool-panel" data-panel="color">
+          <div class="color-row">
+            <input id="colorInput" class="tool-input" placeholder="#1e90ff / rgb(30,144,255)" spellcheck="false">
+            <button class="btn btn-primary btn-sm" id="colorBtn" data-i18n="tools.color.convert"></button>
+            <div class="color-swatch" id="colorSwatch" aria-hidden="true"></div>
+          </div>
+          <div id="colorResults" class="hash-results"></div>
+        </div>
+
+        <!-- Diff -->
+        <div class="tool-panel" data-panel="diff">
+          <div class="tool-two-col">
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.diff.left"></label>
+              <textarea id="diffLeft" class="tool-textarea tool-textarea-sm" spellcheck="false"></textarea>
+            </div>
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.diff.right"></label>
+              <textarea id="diffRight" class="tool-textarea tool-textarea-sm" spellcheck="false"></textarea>
+            </div>
+          </div>
+          <div class="tool-actions"><button class="btn btn-primary btn-sm" id="diffBtn" data-i18n="tools.diff.compare"></button></div>
+          <pre id="diffOut" class="tool-pre diff-pre"></pre>
+        </div>
+
+        <!-- 正则测试 -->
+        <div class="tool-panel" data-panel="regex">
+          <div class="color-row">
+            <span class="tool-label" style="margin:0">/</span>
+            <input id="regexPattern" class="tool-input" placeholder="\\d+" spellcheck="false">
+            <span class="tool-label" style="margin:0">/</span>
+            <input id="regexFlags" class="tool-input tool-input-flags" value="g" spellcheck="false">
+            <button class="btn btn-primary btn-sm" id="regexBtn" data-i18n="tools.regex.test"></button>
+          </div>
+          <label class="tool-label" data-i18n="tools.regex.text"></label>
+          <textarea id="regexText" class="tool-textarea tool-textarea-sm" spellcheck="false"></textarea>
+          <pre id="regexOut" class="tool-pre" style="min-height:80px"></pre>
+        </div>
+
+        <!-- 二维码 -->
+        <div class="tool-panel" data-panel="qr">
+          <div class="color-row">
+            <input id="qrInput" class="tool-input" data-i18n-placeholder="tools.qr.placeholder" spellcheck="false">
+            <button class="btn btn-primary btn-sm" id="qrBtn" data-i18n="tools.qr.generate"></button>
+          </div>
+          <div class="qr-wrap">
+            <canvas id="qrCanvas" width="240" height="240"></canvas>
+          </div>
+          <p class="qr-note" data-i18n="tools.qr.note"></p>
+        </div>
+
+        <!-- 代码压缩 / 美化 -->
+        <div class="tool-panel" data-panel="minify">
+          <div class="tool-two-col">
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.minify.input"></label>
+              <textarea id="minifyInput" class="tool-textarea" spellcheck="false"></textarea>
+            </div>
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.minify.output"></label>
+              <textarea id="minifyOutput" class="tool-textarea" spellcheck="false" readonly></textarea>
+            </div>
+          </div>
+          <div class="tool-actions">
+            <button class="btn btn-primary btn-sm" id="cssMinBtn" data-i18n="tools.minify.cssMin"></button>
+            <button class="btn btn-ghost btn-sm" id="cssPrettyBtn" data-i18n="tools.minify.cssPretty"></button>
+            <button class="btn btn-ghost btn-sm" id="jsPrettyBtn" data-i18n="tools.minify.jsPretty"></button>
+            <button class="btn btn-ghost btn-sm" id="minifyCopyBtn" data-i18n="common.copy"></button>
+          </div>
+          <p class="qr-note" data-i18n="tools.minify.note"></p>
+        </div>
       </div>
     </section>
 
@@ -150,8 +306,9 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="./assets/i18n.js?v=f8de697a"></script>
+  <script src="./assets/i18n.js?v=d32ba988"></script>
   <script src="./assets/data.js?v=c63d316f"></script>
-  <script src="./assets/app.js?v=65eac6e4"></script>
+  <script src="./assets/qr.js?v=a260390b"></script>
+  <script src="./assets/app.js?v=18e69809"></script>
 </body>
 </html>
