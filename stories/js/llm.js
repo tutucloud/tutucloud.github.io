@@ -207,6 +207,34 @@ export async function chatStream({ baseUrl, apiKey, model, messages, tools, temp
   }
 }
 
+// GET /models — direct first, bridge fallback (same strategy as chatStream).
+export async function listModels({ baseUrl, apiKey }) {
+  const endpoint = baseUrl.replace(/\/+$/, '') + '/models';
+  const parse = (bodyText) => {
+    const data = JSON.parse(bodyText);
+    const arr = Array.isArray(data) ? data : (data.data || data.models || []);
+    return arr.map(m => m.id || m.name || m.model).filter(Boolean);
+  };
+  const tryDirect = async () => {
+    const res = await fetch(endpoint, { headers: { 'Authorization': 'Bearer ' + apiKey } });
+    if (!res.ok) throw new Error('HTTP_' + res.status);
+    return parse(await res.text());
+  };
+  const tryBridge = async () => {
+    if (!bridgeReady) throw new Error('BRIDGE_NOT_INSTALLED');
+    const profile = 'stories-default';
+    await bridgeCall('llm-bridge.secret.set', { profile, baseUrl: baseUrl.replace(/\/+$/, ''), apiKey: apiKey || '', name: 'Stories' });
+    const payload = await bridgeCall('llm-bridge.get', { profile, endpoint });
+    return parse(payload.body);
+  };
+  try {
+    return await tryDirect();
+  } catch (err) {
+    if (isNetworkError(err) && bridgeReady) return await tryBridge();
+    throw err;
+  }
+}
+
 export function corsHelpNeeded(err) {
   return isNetworkError(err);
 }

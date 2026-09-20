@@ -98,10 +98,15 @@
       <select id="f-provider"></select></label>
     <label class="field"><span data-i18n="baseUrl">API base URL</span>
       <input id="f-baseurl" type="text"></label>
-    <label class="field"><span data-i18n="model">Model</span>
-      <input id="f-model" type="text"></label>
     <label class="field"><span data-i18n="apiKey">API key</span>
       <input id="f-apikey" type="password" autocomplete="off"></label>
+    <label class="field"><span data-i18n="model">Model</span>
+      <div class="model-row">
+        <input id="f-model" type="text" list="model-list" autocomplete="off">
+        <button id="btn-fetch-models" class="ghost-btn" data-i18n="fetchModels">Fetch model list</button>
+      </div>
+      <datalist id="model-list"></datalist>
+    </label>
     <p class="hint" data-i18n="apiKeyHint">The key is stored only in your browser (localStorage). For better security use llm-bridge, which stores the key in the extension.</p>
     <div class="settings-actions">
       <button id="btn-bridge-save" class="ghost-btn" data-i18n="saveToBridge">Save to llm-bridge extension</button>
@@ -120,10 +125,13 @@
   <div class="modal-box">
     <h3 data-i18n="corsTitle">CORS problem detected</h3>
     <p data-i18n="corsBody">The provider's API blocks direct browser requests. Install the llm-bridge extension and the app will send requests through it automatically.</p>
+    <div class="modal-actions" style="justify-content:flex-start">
+      <button id="btn-cors-download" class="primary-btn" data-i18n="corsDownload">Download extension (llm-bridge.zip)</button>
+    </div>
     <ol class="cors-steps">
-      <li data-i18n="corsStep1">Open the folder D:\workspace\llm-bridge</li>
+      <li data-i18n="corsStep1">Unzip the downloaded file to any folder</li>
       <li data-i18n="corsStep2">Chrome → chrome://extensions/ → enable Developer mode</li>
-      <li data-i18n="corsStep3">"Load unpacked" and select that folder</li>
+      <li data-i18n="corsStep3">"Load unpacked" and select the unzipped folder</li>
       <li data-i18n="corsStep4">Back in Settings, click "Save to llm-bridge extension"</li>
     </ol>
     <div class="modal-actions">

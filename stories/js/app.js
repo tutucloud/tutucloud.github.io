@@ -1,6 +1,8 @@
 import { detectLang, setLang, getLang, t, applyStatic } from './i18n.js';
 import { PROVIDERS } from './providers.js';
-import { chatStream, bridgeAvailable, saveProfileToBridge, corsHelpNeeded } from './llm.js';
+import { chatStream, bridgeAvailable, saveProfileToBridge, corsHelpNeeded, listModels } from './llm.js';
+import { BRIDGE_FILES } from './bridge-files.js';
+import { makeZip } from './zip.js';
 import { getData, getSettings, saveSettings, upsertScenario, deleteScenario, getSession, clearSession, persist, uid } from './storage.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -659,6 +661,38 @@ $('#btn-test').addEventListener('click', async () => {
   }
 });
 
+$('#btn-fetch-models').addEventListener('click', async () => {
+  const btn = $('#btn-fetch-models');
+  const el = $('#test-result');
+  const datalist = $('#model-list');
+  btn.disabled = true;
+  btn.textContent = t('fetchingModels');
+  try {
+    const models = await listModels({
+      baseUrl: $('#f-baseurl').value.trim(),
+      apiKey: $('#f-apikey').value.trim(),
+    });
+    models.sort();
+    datalist.innerHTML = '';
+    for (const m of models) {
+      const opt = document.createElement('option');
+      opt.value = m;
+      datalist.appendChild(opt);
+    }
+    el.className = 'hint ok';
+    el.textContent = models.length + t('modelsLoaded');
+  } catch (err) {
+    if (corsHelpNeeded(err) && !bridgeAvailable()) {
+      openCorsModal();
+    } else {
+      el.className = 'hint err';
+      el.textContent = t('errGeneric') + (err.message || err);
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t('fetchModels');
+  }
+});
 $('#btn-bridge-save').addEventListener('click', async () => {
   const el = $('#test-result');
   el.className = 'hint';
@@ -685,6 +719,17 @@ $('#btn-bridge-save').addEventListener('click', async () => {
 function openCorsModal() {
   $('#modal-cors').classList.remove('hidden');
 }
+$('#btn-cors-download').onclick = () => {
+  const files = Object.entries(BRIDGE_FILES).map(([name, text]) => ({ name: 'llm-bridge/' + name, text }));
+  const blob = makeZip(files);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'llm-bridge.zip';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+};
 $('#btn-cors-retry').addEventListener('click', () => {
   $('#modal-cors').classList.add('hidden');
   generate();

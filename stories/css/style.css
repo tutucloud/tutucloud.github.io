@@ -198,3 +198,7 @@ body {
   #composer { padding: 10px 12px; }
   .modal-box { width: 94vw; padding: 16px; }
 }
+
+.model-row { display: flex; gap: 8px; }
+.model-row input { flex: 1; }
+.model-row .ghost-btn { flex: none; white-space: nowrap; }
