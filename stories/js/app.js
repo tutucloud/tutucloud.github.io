@@ -39,6 +39,7 @@ function renderScenarioList() {
 function selectScenario(id) {
   activeScenarioId = id;
   saveSettings({ activeScenarioId: id });
+  closeSidebar();
   renderAll();
 }
 
@@ -695,6 +696,13 @@ $('#btn-clear-chat').onclick = () => {
   renderChat();
 };
 $('#btn-send').onclick = () => generate();
+// mobile: drawer sidebar
+const closeSidebar = () => { document.body.classList.remove('sidebar-open'); $('#backdrop').classList.add('hidden'); };
+$('#btn-menu').onclick = () => {
+  document.body.classList.toggle('sidebar-open');
+  $('#backdrop').classList.toggle('hidden', !document.body.classList.contains('sidebar-open'));
+};
+$('#backdrop').onclick = closeSidebar;
 $('#input-box').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generate(); }
 });
