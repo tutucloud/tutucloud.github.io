@@ -29,8 +29,26 @@ function renderScenarioList() {
   ul.innerHTML = '';
   for (const sc of getData().scenarios) {
     const li = document.createElement('li');
-    li.textContent = sc.name;
     if (sc.id === activeScenarioId) li.classList.add('active');
+    const name = document.createElement('span');
+    name.className = 'item-name';
+    name.textContent = sc.name;
+    const del = document.createElement('button');
+    del.className = 'item-delete';
+    del.textContent = '✕';
+    del.title = t('deleteScenario');
+    del.onclick = (e) => {
+      e.stopPropagation();
+      if (!confirm(t('confirmDelete'))) return;
+      const wasActive = sc.id === activeScenarioId;
+      deleteScenario(sc.id);
+      if (wasActive) {
+        activeScenarioId = null;
+        saveSettings({ activeScenarioId: null });
+      }
+      renderAll();
+    };
+    li.append(name, del);
     li.onclick = () => selectScenario(sc.id);
     ul.appendChild(li);
   }
