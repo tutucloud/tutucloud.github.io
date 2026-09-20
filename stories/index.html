@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store">
+<title>Stories · AI Roleplay</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <h1 class="app-title">📖 Stories</h1>
+      <div class="header-actions">
+        <button id="btn-new-scenario" class="icon-btn" data-i18n-title="newScenario" title="New scenario">＋</button>
+        <button id="btn-settings" class="icon-btn" data-i18n-title="settings" title="Settings">⚙</button>
+      </div>
+    </div>
+    <ul id="scenario-list"></ul>
+    <div class="sidebar-footer">
+      <label class="lang-label" for="lang-select" data-i18n="language">Language</label>
+      <select id="lang-select">
+        <option value="auto">Auto</option>
+        <option value="en">English</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
+      </select>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main id="main">
+    <div id="empty-state" class="empty-state">
+      <div class="empty-icon">🎭</div>
+      <h2 data-i18n="emptyTitle">No story yet</h2>
+      <p data-i18n="emptyHint">Create a scenario, set up your AI model, and start role-playing.</p>
+      <button id="btn-empty-new" class="primary-btn" data-i18n="newScenario">New Scenario</button>
+    </div>
+
+    <div id="chat-area" class="hidden">
+      <header id="chat-header">
+        <h2 id="chat-title"></h2>
+        <div class="chat-actions">
+          <button id="btn-edit-scenario" class="ghost-btn" data-i18n="editScenario">Edit</button>
+          <button id="btn-clear-chat" class="ghost-btn" data-i18n="clearChat">Restart</button>
+          <button id="btn-del-scenario" class="ghost-btn danger" data-i18n="deleteScenario">Delete</button>
+        </div>
+      </header>
+      <div id="world-banner"></div>
+      <div id="messages"></div>
+      <div id="dm-status" class="hidden">
+        <span class="dm-spinner"></span>
+        <span id="dm-status-text"></span>
+      </div>
+      <div id="composer">
+        <textarea id="input-box" rows="2" data-i18n-placeholder="inputPlaceholder" placeholder="Say something as your character…"></textarea>
+        <button id="btn-send" class="primary-btn" data-i18n="send">Send</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Scenario modal -->
+<div id="modal-scenario" class="modal hidden">
+  <div class="modal-box">
+    <h3 id="scenario-modal-title" data-i18n="newScenario">New Scenario</h3>
+    <label class="field"><span data-i18n="scenarioName">Scenario name</span>
+      <input id="f-name" type="text"></label>
+    <label class="field"><span data-i18n="worldSetting">World / background</span>
+      <textarea id="f-world" rows="3"></textarea></label>
+    <label class="field"><span data-i18n="yourCharacter">Your character name</span>
+      <input id="f-userchar" type="text"></label>
+    <label class="field"><span data-i18n="yourPersona">Your character persona (how others see you)</span>
+      <textarea id="f-userpersona" rows="2"></textarea></label>
+    <label class="field"><span data-i18n="dmInstructions">Instructions for the DM (pacing, style…)</span>
+      <textarea id="f-dm" rows="2"></textarea></label>
+    <div class="field">
+      <span data-i18n="npcList">AI characters (NPCs)</span>
+      <div id="npc-editor"></div>
+      <button id="btn-add-npc" class="ghost-btn" data-i18n="addNpc">+ Add character</button>
+    </div>
+    <div class="modal-actions">
+      <button class="ghost-btn modal-cancel" data-i18n="cancel">Cancel</button>
+      <button id="btn-save-scenario" class="primary-btn" data-i18n="save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div id="modal-settings" class="modal hidden">
+  <div class="modal-box">
+    <h3 data-i18n="settings">Settings</h3>
+    <label class="field"><span data-i18n="provider">Provider</span>
+      <select id="f-provider"></select></label>
+    <label class="field"><span data-i18n="baseUrl">API base URL</span>
+      <input id="f-baseurl" type="text"></label>
+    <label class="field"><span data-i18n="model">Model</span>
+      <input id="f-model" type="text"></label>
+    <label class="field"><span data-i18n="apiKey">API key</span>
+      <input id="f-apikey" type="password" autocomplete="off"></label>
+    <p class="hint" data-i18n="apiKeyHint">The key is stored only in your browser (localStorage). For better security use llm-bridge, which stores the key in the extension.</p>
+    <div class="settings-actions">
+      <button id="btn-bridge-save" class="ghost-btn" data-i18n="saveToBridge">Save to llm-bridge extension</button>
+      <button id="btn-test" class="ghost-btn" data-i18n="testConnection">Test connection</button>
+    </div>
+    <div id="test-result" class="hint"></div>
+    <div class="modal-actions">
+      <button class="ghost-btn modal-cancel" data-i18n="cancel">Cancel</button>
+      <button id="btn-save-settings" class="primary-btn" data-i18n="save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- CORS help modal -->
+<div id="modal-cors" class="modal hidden">
+  <div class="modal-box">
+    <h3 data-i18n="corsTitle">CORS problem detected</h3>
+    <p data-i18n="corsBody">The provider's API blocks direct browser requests. Install the llm-bridge extension and the app will send requests through it automatically.</p>
+    <ol class="cors-steps">
+      <li data-i18n="corsStep1">Open the folder D:\workspace\llm-bridge</li>
+      <li data-i18n="corsStep2">Chrome → chrome://extensions/ → enable Developer mode</li>
+      <li data-i18n="corsStep3">"Load unpacked" and select that folder</li>
+      <li data-i18n="corsStep4">Back in Settings, click "Save to llm-bridge extension"</li>
+    </ol>
+    <div class="modal-actions">
+      <button class="ghost-btn modal-cancel" data-i18n="close">Close</button>
+      <button id="btn-cors-retry" class="primary-btn" data-i18n="retry">Retry via extension</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
