@@ -34,10 +34,15 @@ async function ensureLoaded() {
 }
 
 async function importLocalModel(files) {
+  if (!files.length) {
+    setModelStatus('未选择任何文件，请重新选择模型目录', 'error');
+    return;
+  }
+  const totalMB = (files.reduce((s, f) => s + f.size, 0) / 1048576).toFixed(1);
+  setModelStatus(`已选择 ${files.length} 个文件（共 ${totalMB}MB），正在导入…`);
   BTN_ONLINE.disabled = true;
   INPUT_MODEL.disabled = true;
   INPUT_MODEL_DIR.disabled = true;
-  setModelStatus('正在导入本地模型…');
   try {
     const name = await loadLocal(files);
     $('model-progress-wrap').classList.add('hidden');
