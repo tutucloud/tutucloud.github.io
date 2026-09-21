@@ -191,7 +191,9 @@ export async function chatStream({ baseUrl, apiKey, model, messages, tools, temp
       window.addEventListener('message', onMsg);
       window.postMessage({
         id: requestId, type: 'llm-bridge.request',
-        payload: { profile, endpoint, body },
+        // the extension stringifies payload.body itself — pass the object,
+        // passing a string here would double-encode the request
+        payload: { profile, endpoint, body: bodyObj },
       }, location.origin);
     });
     return full;
