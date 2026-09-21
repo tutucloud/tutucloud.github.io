@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>纯 Web 端 RAG 演示</title>
+<link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+<h1>纯 Web 端 RAG 演示</h1>
+<p class="subtitle">模型、文档与向量全部保存在浏览器本地（Cache Storage + IndexedDB），无服务器。</p>
+
+<section id="sec-model">
+  <h2>① 嵌入模型</h2>
+  <div id="model-status" class="status">未加载</div>
+  <div class="row">
+    <button id="btn-online">在线加载模型（multilingual-e5-small，约 130MB）</button>
+    <label class="file-label">导入本地模型文件
+      <input type="file" id="input-model" multiple>
+    </label>
+  </div>
+  <div id="model-progress-wrap" class="progress-wrap hidden">
+    <div id="model-progress-label">下载中…</div>
+    <progress id="model-progress" max="100" value="0"></progress>
+  </div>
+  <p class="hint">本地导入需选择模型目录下的 config.json、tokenizer.json、tokenizer_config.json、onnx/model_quantized.onnx；单文件上限 200MB。</p>
+</section>
+
+<section id="sec-docs">
+  <h2>② 文档库（TXT）</h2>
+  <div class="row">
+    <label class="file-label">选择多个 TXT 文件
+      <input type="file" id="input-docs" multiple accept=".txt">
+    </label>
+    <span id="docs-summary"></span>
+  </div>
+  <div id="docs-progress-wrap" class="progress-wrap hidden">
+    <div id="docs-progress-label">处理中…</div>
+    <progress id="docs-progress" max="100" value="0"></progress>
+  </div>
+  <table id="files-table" class="hidden">
+    <thead><tr><th>文件名</th><th>大小</th><th>切片数</th><th>状态</th><th></th></tr></thead>
+    <tbody id="files-tbody"></tbody>
+  </table>
+</section>
+
+<section id="sec-query">
+  <h2>③ 检索</h2>
+  <div class="row">
+    <input type="text" id="query-input" placeholder="输入问题，检索最相关的 10 个切片…" autocomplete="off">
+    <button id="btn-query">检索</button>
+  </div>
+  <div id="query-status" class="status"></div>
+  <ol id="results"></ol>
+</section>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
