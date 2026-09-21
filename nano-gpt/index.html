@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nano-gpt — 纯 Web mini-GPT 训练演示</title>
+  <style>
+    :root { --bd: #ddd; --fg: #222; --muted: #777; --accent: #2563eb; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, "Microsoft YaHei", sans-serif; max-width: 1000px; margin: 0 auto; padding: 1rem; color: var(--fg); }
+    h1 { font-size: 1.4rem; } h2 { font-size: 1.05rem; margin: 0 0 .5rem; }
+    section { border: 1px solid var(--bd); border-radius: 8px; padding: .8rem 1rem; margin-bottom: 1rem; }
+    label { display: inline-block; margin: .2rem .8rem .2rem 0; font-size: .85rem; }
+    input[type=number] { width: 5.5em; }
+    input[type=number], input[type=text], textarea { border: 1px solid var(--bd); border-radius: 4px; padding: .3rem .4rem; font: inherit; }
+    textarea { width: 100%; height: 8em; resize: vertical; }
+    button { border: 1px solid var(--bd); border-radius: 5px; background: #f6f6f6; padding: .35rem .9rem; cursor: pointer; margin-right: .4rem; font: inherit; }
+    button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    .row { margin: .3rem 0; }
+    .stats span { display: inline-block; margin-right: 1.2rem; font-size: .9rem; }
+    .stats b { font-variant-numeric: tabular-nums; }
+    .muted { color: var(--muted); font-size: .85rem; }
+    #msg { padding: .5rem .8rem; border-radius: 6px; margin-bottom: 1rem; display: none; font-size: .9rem; }
+    #msg.err { display: block; background: #fee2e2; color: #991b1b; }
+    #msg.ok { display: block; background: #dcfce7; color: #166534; }
+    #genOut { white-space: pre-wrap; background: #f8f8f8; border: 1px solid var(--bd); border-radius: 6px; padding: .6rem; min-height: 3em; font-size: .95rem; }
+    #probBars .bar { display: flex; align-items: center; font-size: .8rem; margin: 2px 0; }
+    #probBars .bar .lab { width: 4em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #probBars .bar .fill { background: var(--accent); height: .9em; border-radius: 2px; }
+    canvas { width: 100%; border: 1px solid var(--bd); border-radius: 4px; background: #fff; }
+    #attnCanvas { height: 360px; }
+    #lossCanvas { height: 220px; }
+    details summary { cursor: pointer; font-size: .9rem; color: var(--muted); }
+    .warn { background: #fef9c3; border: 1px solid #eab308; border-radius: 6px; padding: .5rem .8rem; margin-bottom: 1rem; font-size: .9rem; display: none; }
+  </style>
+</head>
+<body>
+  <h1>nano-gpt <span class="muted">纯 Web mini-GPT 训练演示</span></h1>
+  <div id="fileWarn" class="warn">检测到通过 <code>file://</code> 打开：浏览器会阻止 Worker/模块加载，请用静态服务器访问，例如 <code>npx serve src</code>。</div>
+  <div id="msg"></div>
+
+  <section>
+    <h2>① 训练数据</h2>
+    <div class="row">
+      <button id="btnSample">填入示例文本</button>
+      <input type="file" id="fileIn" accept=".txt,text/plain" />
+    </div>
+    <textarea id="corpus" placeholder="粘贴任意文本资料（中英文皆可）…"></textarea>
+    <div class="muted row" id="dataInfo">字符数 0 · 词表（不同字符）0</div>
+  </section>
+
+  <section>
+    <h2>② 模型配置</h2>
+    <div class="row">
+      <label>层数 <input type="number" id="layers" value="2" min="1" max="4"></label>
+      <label>注意力头 <input type="number" id="heads" value="2" min="1" max="8"></label>
+      <label>隐藏维度 d_model <input type="number" id="dModel" value="64" min="16" max="256" step="8"></label>
+      <label>上下文长度 <input type="number" id="context" value="64" min="16" max="256" step="8"></label>
+      <label>dropout <input type="number" id="dropout" value="0.1" min="0" max="0.9" step="0.05"></label>
+      <label>学习率 <input type="number" id="lr" value="0.003" min="0.00001" max="0.1" step="0.0001"></label>
+      <label>batch size <input type="number" id="batch" value="32" min="4" max="256" step="4"></label>
+      <button id="btnBuild" class="primary">创建模型</button>
+    </div>
+    <div class="muted row" id="modelInfo">尚未创建模型（需先在 ① 提供文本以确定词表）</div>
+  </section>
+
+  <section>
+    <h2>③ 训练</h2>
+    <div class="row">
+      <button id="btnTrain" class="primary" disabled>开始训练</button>
+      <button id="btnPause" disabled>暂停</button>
+      <button id="btnStop" disabled>停止</button>
+      <span class="muted">每 20 步在验证集（语料后 10%）上评估一次</span>
+    </div>
+    <div class="stats row">
+      <span>步数 <b id="stStep">0</b></span>
+      <span>train loss <b id="stLoss">—</b></span>
+      <span>val loss <b id="stVal">—</b></span>
+      <span>步/秒 <b id="stSps">—</b></span>
+      <span>已见 tokens <b id="stTok">0</b></span>
+    </div>
+    <canvas id="lossCanvas" width="960" height="220"></canvas>
+  </section>
+
+  <section>
+    <h2>④ 生成测试</h2>
+    <div class="row">
+      <label>prompt <input type="text" id="prompt" style="width:20em" value=""></label>
+      <label>生成长度 <input type="number" id="maxTokens" value="200" min="1" max="2000"></label>
+      <label>temperature <input type="number" id="temp" value="1.0" min="0.01" max="3" step="0.05"></label>
+      <label>top-k <input type="number" id="topk" value="20" min="1" max="100"></label>
+      <button id="btnGen" disabled>生成</button>
+    </div>
+    <div id="genOut" class="muted">（生成结果）</div>
+    <details class="row">
+      <summary>每步 top-k 概率（最近一步）</summary>
+      <div id="probBars"></div>
+    </details>
+  </section>
+
+  <section>
+    <h2>⑤ 注意力观察</h2>
+    <div class="row">
+      <label>输入文本 <input type="text" id="attnText" style="width:28em" placeholder="用训练语料中的字符"></label>
+      <label>层 <select id="attnLayer"></select></label>
+      <label>头 <select id="attnHead"></select></label>
+      <button id="btnAttn" disabled>查看注意力</button>
+    </div>
+    <canvas id="attnCanvas" width="960" height="360"></canvas>
+    <div class="muted row">行 = 当前 token，列 = 它关注的上文 token；颜色越深权重越大。下三角以外被因果掩码屏蔽。</div>
+  </section>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
