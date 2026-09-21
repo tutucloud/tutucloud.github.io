@@ -277,7 +277,8 @@ function buildPrompt(query, ranked) {
     .map((r, i) => t('src_fmt', { i: i + 1, file: r.chunk.fileName, idx: r.chunk.index + 1, score: r.score.toFixed(4) })
       + '\n' + r.chunk.text)
     .join('\n\n');
-  return t('prompt_tpl', { lang: t('lang_name'), ctx, q: query });
+  const files = [...new Set(ranked.map(r => r.chunk.fileName))].join(', ');
+  return t('prompt_tpl', { lang: t('lang_name'), ctx, q: query, n: ranked.length, files });
 }
 
 function renderPrompt() {
