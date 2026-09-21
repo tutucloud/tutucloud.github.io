@@ -15,6 +15,9 @@
   <div id="model-status" class="status">未加载</div>
   <div class="row">
     <button id="btn-online">在线加载模型（multilingual-e5-small，约 130MB）</button>
+    <label class="file-label">选择模型文件夹（含子目录）
+      <input type="file" id="input-model-dir" webkitdirectory>
+    </label>
     <label class="file-label">导入本地模型文件
       <input type="file" id="input-model" multiple>
     </label>
@@ -23,7 +26,7 @@
     <div id="model-progress-label">下载中…</div>
     <progress id="model-progress" max="100" value="0"></progress>
   </div>
-  <p class="hint">本地导入需选择模型目录下的 config.json、tokenizer.json、tokenizer_config.json、onnx/model_quantized.onnx；单文件上限 200MB。</p>
+  <p class="hint">推荐用"选择模型文件夹"一次导入整个模型目录（子目录自动包含，无关文件自动跳过）。必需文件：config.json、tokenizer.json、tokenizer_config.json，以及 onnx/model_quantized.onnx（或 onnx/model.onnx）。单文件上限 200MB。</p>
 </section>
 
 <section id="sec-docs">

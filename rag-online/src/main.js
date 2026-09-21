@@ -25,6 +25,7 @@ function showProgress(wrapId, labelId, barId, label, pct) {
 
 const BTN_ONLINE = $('btn-online');
 const INPUT_MODEL = $('input-model');
+const INPUT_MODEL_DIR = $('input-model-dir');
 
 async function ensureLoaded() {
   if (isReady()) return true;
@@ -32,9 +33,38 @@ async function ensureLoaded() {
   return false;
 }
 
+async function importLocalModel(files) {
+  BTN_ONLINE.disabled = true;
+  INPUT_MODEL.disabled = true;
+  INPUT_MODEL_DIR.disabled = true;
+  setModelStatus('正在导入本地模型…');
+  try {
+    const name = await loadLocal(files);
+    $('model-progress-wrap').classList.add('hidden');
+    setModelStatus(`模型就绪（${name}）`, 'ready');
+  } catch (err) {
+    setModelStatus('本地导入失败：' + err.message, 'error');
+  }
+  BTN_ONLINE.disabled = false;
+  INPUT_MODEL.disabled = false;
+  INPUT_MODEL_DIR.disabled = false;
+  INPUT_MODEL.value = '';
+  INPUT_MODEL_DIR.value = '';
+}
+
+function handleModelPick(input) {
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  importLocalModel(files);
+}
+
+INPUT_MODEL.addEventListener('change', () => handleModelPick(INPUT_MODEL));
+INPUT_MODEL_DIR.addEventListener('change', () => handleModelPick(INPUT_MODEL_DIR));
+
 BTN_ONLINE.addEventListener('click', async () => {
   BTN_ONLINE.disabled = true;
   INPUT_MODEL.disabled = true;
+  INPUT_MODEL_DIR.disabled = true;
   setModelStatus('正在加载模型…');
   try {
     const name = await loadOnline(p => {
@@ -54,26 +84,7 @@ BTN_ONLINE.addEventListener('click', async () => {
   }
   BTN_ONLINE.disabled = false;
   INPUT_MODEL.disabled = false;
-});
-
-INPUT_MODEL.addEventListener('change', async () => {
-  const files = Array.from(INPUT_MODEL.files);
-  if (!files.length) return;
-  BTN_ONLINE.disabled = true;
-  INPUT_MODEL.disabled = true;
-  setModelStatus('正在导入本地模型…');
-  try {
-    const total = files.reduce((s, f) => s + f.size, 0);
-    let done = 0;
-    const name = await loadLocal(files, undefined);
-    $('model-progress-wrap').classList.add('hidden');
-    setModelStatus(`模型就绪（本地导入，${files.length} 个文件，共 ${(total / 1048576).toFixed(1)}MB）`, 'ready');
-  } catch (err) {
-    setModelStatus('本地导入失败：' + err.message, 'error');
-  }
-  BTN_ONLINE.disabled = false;
-  INPUT_MODEL.disabled = false;
-  INPUT_MODEL.value = '';
+  INPUT_MODEL_DIR.disabled = false;
 });
 
 // ---------- 文档区 ----------

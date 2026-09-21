@@ -8,15 +8,14 @@ export const MAX_MODEL_FILE_BYTES = 200 * 1024 * 1024; // 单文件 200MB 上限
 let extractor = null;
 let currentSource = null; // 'online' | 'local'
 
-// 本地导入模型的 Cache 适配器：按文件名匹配 Cache Storage 中的条目
+// 本地导入模型的 Cache 适配器：按文件名匹配 Cache Storage 中的条目。
+// 缺失文件返回 404 响应，让 transformers.js 报出具体缺哪个文件。
 class LocalModelCache {
   async match(request) {
     const url = typeof request === 'string' ? request : request.url;
     const name = url.split('/').pop();
     const cache = await caches.open(LOCAL_CACHE);
-    const hit = await cache.match('/local/' + name);
-    if (hit) return hit;
-    throw new Error('本地模型缺少文件：' + name);
+    return (await cache.match('/local/' + name)) || new Response('not found', { status: 404 });
   }
   async put(request, response) {
     const url = typeof request === 'string' ? request : request.url;
@@ -64,33 +63,57 @@ export async function loadOnline(onProgress) {
   throw lastErr;
 }
 
-// 导入本地模型文件，存入 Cache Storage 后从本地加载
+// 导入本地模型文件（可来自文件夹递归选择），存入 Cache Storage 后从本地加载。
+// 只接受白名单内的文件（其余自动跳过），依次尝试 q8 量化与 fp32 权重。
+const NEEDED_FILES = new Set([
+  'config.json', 'tokenizer.json', 'tokenizer_config.json',
+  'special_tokens_map.json', 'vocab.txt', 'merges.txt',
+  'added_tokens.json',
+  'model_quantized.onnx', 'model.onnx', 'quantized.onnx',
+]);
+
 export async function loadLocal(fileList, onProgress) {
   const cache = await caches.open(LOCAL_CACHE);
   const names = [];
+  let totalBytes = 0;
+  let skipped = 0;
   for (const f of fileList) {
+    if (!NEEDED_FILES.has(f.name)) { skipped++; continue; }
     if (f.size > MAX_MODEL_FILE_BYTES) {
       throw new Error(`文件 ${f.name} 超过 200MB 大小限制（实际 ${(f.size / 1048576).toFixed(1)}MB）`);
     }
     const buf = await f.arrayBuffer();
+    totalBytes += buf.byteLength;
     await cache.put('/local/' + f.name, new Response(buf, { headers: { 'Content-Type': 'application/octet-stream' } }));
     names.push(f.name);
   }
+  if (onProgress) onProgress({ status: 'stored', names, skipped });
   for (const required of ['config.json', 'tokenizer.json']) {
     if (!names.includes(required)) {
-      throw new Error(`缺少必需文件 ${required}，请选择模型目录内的全部文件`);
+      throw new Error(`缺少必需文件 ${required}，请选择模型目录（允许包含 onnx/ 子目录）`);
     }
   }
   env.useBrowserCache = false;
+  env.useCustomCache = true;
   env.allowLocalModels = true;
+  env.allowRemoteModels = false;
   env.localModelPath = '/';
-  env.customCache = new LocalModelCache();
-  extractor = await pipeline('feature-extraction', 'local', {
-    progress_callback: onProgress,
-    dtype: 'q8',
-  });
-  currentSource = 'local';
-  return '本地导入模型';
+  const customCache = new LocalModelCache();
+  env.customCache = customCache;
+  let lastErr;
+  for (const dtype of ['q8', 'fp32']) {
+    try {
+      extractor = await pipeline('feature-extraction', 'local', {
+        progress_callback: onProgress,
+        dtype,
+      });
+      currentSource = 'local';
+      return `本地导入模型（${names.length} 个文件，共 ${(totalBytes / 1048576).toFixed(1)}MB）`;
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr;
 }
 
 // 批量向量化：texts 为字符串数组，prefix 为 e5 约定的 'query: ' 或 'passage: '
