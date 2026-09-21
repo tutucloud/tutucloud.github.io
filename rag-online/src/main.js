@@ -126,17 +126,41 @@ async function refreshFileTable() {
     : '尚未导入文档';
 }
 
+// 支持的纯文本格式；html/xml/md 之外的按原样切分
+const TEXT_EXTS = ['txt', 'md', 'markdown', 'mdx', 'csv', 'tsv', 'log', 'json', 'xml', 'html', 'htm', 'srt', 'vtt'];
+
+// 极轻量的可读性处理：去掉 html 标签与 md 链接/图片语法，其余原样
+function normalizeText(name, text) {
+  if (/\.html?$/i.test(name)) {
+    text = text.replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ')
+               .replace(/<[^>]+>/g, ' ')
+               .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
+               .replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  }
+  return text;
+}
+
 $('input-docs').addEventListener('change', async () => {
-  const files = Array.from($('input-docs').files).filter(f => f.name.toLowerCase().endsWith('.txt'));
+  const picked = Array.from($('input-docs').files);
   $('input-docs').value = '';
-  if (!files.length) return;
+  const files = picked.filter(f => TEXT_EXTS.includes(f.name.split('.').pop().toLowerCase()));
+  const skipped = picked.length - files.length;
+  if (!files.length) {
+    showProgress('docs-progress-wrap', 'docs-progress-label', 'docs-progress',
+      `未导入：所选文件均不是支持的文本格式（${TEXT_EXTS.join('/')}）`, 0);
+    return;
+  }
   if (!(await ensureLoaded())) return;
   busy = true;
+  if (skipped) {
+    showProgress('docs-progress-wrap', 'docs-progress-label', 'docs-progress',
+      `跳过 ${skipped} 个不支持的文件，处理其余 ${files.length} 个…`, 0);
+  }
 
   try {
     for (const file of files) {
       const fileId = crypto.randomUUID();
-      const text = await file.text();
+      const text = normalizeText(file.name, await file.text());
       const chunks = splitIntoChunks(text);
       if (!chunks.length) {
         putFile({ id: fileId, name: file.name, size: file.size, chunkCount: 0, addedAt: Date.now() });
