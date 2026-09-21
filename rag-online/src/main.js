@@ -1,14 +1,35 @@
 import {
-  isReady, source, loadOnline, loadLocal, embed,
-  MAX_MODEL_FILE_BYTES,
+  isReady, loadOnline, loadLocal, embed,
 } from './embedder.js';
 import { splitIntoChunks } from './chunk.js';
 import {
   putFile, getFiles, deleteFileData, putChunksWithVectors,
   getAllChunksAndVectors,
 } from './db.js';
+import { t, getLang, setLang, applyStatic, supportedLangs } from './i18n.js';
 
 const $ = id => document.getElementById(id);
+const fmtMB = b => (b / 1048576).toFixed(1) + 'MB';
+const fmtKB = b => (b / 1024).toFixed(1) + 'KB';
+
+// ---------- 语言 ----------
+
+const langSelect = $('lang-select');
+for (const { code, name } of supportedLangs()) {
+  const opt = document.createElement('option');
+  opt.value = code;
+  opt.textContent = name;
+  langSelect.appendChild(opt);
+}
+langSelect.value = getLang();
+applyStatic();
+langSelect.addEventListener('change', () => {
+  setLang(langSelect.value);
+  applyStatic();
+  document.querySelector('title').textContent = t('title');
+  refreshFileTable();
+  renderPrompt(); // 已有检索结果时按新语言重建提示词
+});
 
 // ---------- 模型区 ----------
 
@@ -29,26 +50,51 @@ const INPUT_MODEL_DIR = $('input-model-dir');
 
 async function ensureLoaded() {
   if (isReady()) return true;
-  setModelStatus('请先加载嵌入模型（在线下载或本地导入）', 'error');
+  setModelStatus(t('err_need_model'), 'error');
   return false;
 }
 
+BTN_ONLINE.addEventListener('click', async () => {
+  BTN_ONLINE.disabled = true;
+  INPUT_MODEL.disabled = true;
+  INPUT_MODEL_DIR.disabled = true;
+  setModelStatus(t('loading_model'));
+  try {
+    const name = await loadOnline(p => {
+      if (p.status === 'progress' && p.total) {
+        showProgress('model-progress-wrap', 'model-progress-label', 'model-progress',
+          t('dl_progress', { file: p.file, a: (p.loaded / 1048576).toFixed(1), b: (p.total / 1048576).toFixed(1) }),
+          p.loaded / p.total);
+      } else if (p.status === 'done' && p.file) {
+        showProgress('model-progress-wrap', 'model-progress-label', 'model-progress',
+          t('dl_done', { file: p.file }), 1);
+      }
+    });
+    $('model-progress-wrap').classList.add('hidden');
+    setModelStatus(t('model_ready', { name }), 'ready');
+  } catch (err) {
+    setModelStatus(t('online_fail', { msg: err.message }), 'error');
+  }
+  BTN_ONLINE.disabled = false;
+  INPUT_MODEL.disabled = false;
+  INPUT_MODEL_DIR.disabled = false;
+});
+
 async function importLocalModel(files) {
   if (!files.length) {
-    setModelStatus('未选择任何文件，请重新选择模型目录', 'error');
+    setModelStatus(t('pick_none'), 'error');
     return;
   }
-  const totalMB = (files.reduce((s, f) => s + f.size, 0) / 1048576).toFixed(1);
-  setModelStatus(`已选择 ${files.length} 个文件（共 ${totalMB}MB），正在导入…`);
+  setModelStatus(t('pick_selected', { n: files.length, mb: fmtMB(files.reduce((s, f) => s + f.size, 0)) }));
   BTN_ONLINE.disabled = true;
   INPUT_MODEL.disabled = true;
   INPUT_MODEL_DIR.disabled = true;
   try {
     const name = await loadLocal(files);
     $('model-progress-wrap').classList.add('hidden');
-    setModelStatus(`模型就绪（${name}）`, 'ready');
+    setModelStatus(t('model_ready', { name }), 'ready');
   } catch (err) {
-    setModelStatus('本地导入失败：' + err.message, 'error');
+    setModelStatus(t('import_fail', { msg: err.message }), 'error');
   }
   BTN_ONLINE.disabled = false;
   INPUT_MODEL.disabled = false;
@@ -58,47 +104,15 @@ async function importLocalModel(files) {
 }
 
 function handleModelPick(input) {
-  const files = Array.from(input.files);
-  if (!files.length) return;
-  importLocalModel(files);
+  importLocalModel(Array.from(input.files));
 }
 
 INPUT_MODEL.addEventListener('change', () => handleModelPick(INPUT_MODEL));
 INPUT_MODEL_DIR.addEventListener('change', () => handleModelPick(INPUT_MODEL_DIR));
 
-BTN_ONLINE.addEventListener('click', async () => {
-  BTN_ONLINE.disabled = true;
-  INPUT_MODEL.disabled = true;
-  INPUT_MODEL_DIR.disabled = true;
-  setModelStatus('正在加载模型…');
-  try {
-    const name = await loadOnline(p => {
-      if (p.status === 'progress' && p.total) {
-        showProgress('model-progress-wrap', 'model-progress-label', 'model-progress',
-          `下载 ${p.file}：${(p.loaded / 1048576).toFixed(1)}MB / ${(p.total / 1048576).toFixed(1)}MB`,
-          p.loaded / p.total);
-      } else if (p.status === 'done' && p.file) {
-        showProgress('model-progress-wrap', 'model-progress-label', 'model-progress',
-          `完成 ${p.file}`, 1);
-      }
-    });
-    $('model-progress-wrap').classList.add('hidden');
-    setModelStatus(`模型就绪（${name}，在线缓存）`, 'ready');
-  } catch (err) {
-    setModelStatus('模型加载失败：' + err.message, 'error');
-  }
-  BTN_ONLINE.disabled = false;
-  INPUT_MODEL.disabled = false;
-  INPUT_MODEL_DIR.disabled = false;
-});
-
 // ---------- 文档区 ----------
 
 let busy = false;
-
-function fmtSize(bytes) {
-  return bytes < 1024 * 1024 ? (bytes / 1024).toFixed(1) + 'KB' : (bytes / 1048576).toFixed(1) + 'MB';
-}
 
 async function refreshFileTable() {
   const files = await getFiles();
@@ -106,10 +120,10 @@ async function refreshFileTable() {
   tbody.innerHTML = '';
   for (const f of files.sort((a, b) => a.name.localeCompare(b.name))) {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${f.name}</td><td>${fmtSize(f.size)}</td><td>${f.chunkCount}</td><td>已入库</td>`;
+    tr.innerHTML = `<td>${f.name}</td><td>${f.size < 1048576 ? fmtKB(f.size) : fmtMB(f.size)}</td><td>${f.chunkCount}</td><td>${t('state_ok')}</td>`;
     const tdBtn = document.createElement('td');
     const btn = document.createElement('button');
-    btn.textContent = '删除';
+    btn.textContent = t('btn_del');
     btn.addEventListener('click', async () => {
       if (busy) return;
       await deleteFileData(f.id);
@@ -120,16 +134,15 @@ async function refreshFileTable() {
     tbody.appendChild(tr);
   }
   $('files-table').classList.toggle('hidden', files.length === 0);
-  const totalChunks = files.reduce((s, f) => s + f.chunkCount, 0);
   $('docs-summary').textContent = files.length
-    ? `共 ${files.length} 个文件，${totalChunks} 个切片`
-    : '尚未导入文档';
+    ? t('docs_summary', { n: files.length, m: files.reduce((s, f) => s + f.chunkCount, 0) })
+    : t('docs_empty_hint');
 }
 
-// 支持的纯文本格式；html/xml/md 之外的按原样切分
+// 支持的纯文本格式
 const TEXT_EXTS = ['txt', 'md', 'markdown', 'mdx', 'csv', 'tsv', 'log', 'json', 'xml', 'html', 'htm', 'srt', 'vtt'];
 
-// 极轻量的可读性处理：去掉 html 标签与 md 链接/图片语法，其余原样
+// 极轻量的可读性处理：去掉 html 标签，其余原样
 function normalizeText(name, text) {
   if (/\.html?$/i.test(name)) {
     text = text.replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ')
@@ -147,14 +160,14 @@ $('input-docs').addEventListener('change', async () => {
   const skipped = picked.length - files.length;
   if (!files.length) {
     showProgress('docs-progress-wrap', 'docs-progress-label', 'docs-progress',
-      `未导入：所选文件均不是支持的文本格式（${TEXT_EXTS.join('/')}）`, 0);
+      t('docs_none_supported', { exts: TEXT_EXTS.join('/') }), 0);
     return;
   }
   if (!(await ensureLoaded())) return;
   busy = true;
   if (skipped) {
     showProgress('docs-progress-wrap', 'docs-progress-label', 'docs-progress',
-      `跳过 ${skipped} 个不支持的文件，处理其余 ${files.length} 个…`, 0);
+      t('skip_files', { n: skipped, m: files.length }), 0);
   }
 
   try {
@@ -166,12 +179,11 @@ $('input-docs').addEventListener('change', async () => {
         putFile({ id: fileId, name: file.name, size: file.size, chunkCount: 0, addedAt: Date.now() });
         continue;
       }
-      const texts = chunks;
       const vectors = await embed(
-        texts,
+        chunks,
         'passage: ',
         (done, total) => showProgress('docs-progress-wrap', 'docs-progress-label', 'docs-progress',
-          `向量化 ${file.name}：${done}/${total} 片`, done / total)
+          t('vec_progress', { file: file.name, done, total }), done / total)
       );
       const now = Date.now();
       const chunkRecords = chunks.map((c, i) => ({
@@ -187,7 +199,8 @@ $('input-docs').addEventListener('change', async () => {
     }
     $('docs-progress-wrap').classList.add('hidden');
   } catch (err) {
-    showProgress('docs-progress-wrap', 'docs-progress-label', 'docs-progress', '处理失败：' + err.message, 0);
+    showProgress('docs-progress-wrap', 'docs-progress-label', 'docs-progress',
+      t('proc_fail', { msg: err.message }), 0);
   }
   busy = false;
   refreshFileTable();
@@ -195,10 +208,24 @@ $('input-docs').addEventListener('change', async () => {
 
 // ---------- 检索区 ----------
 
+let lastResults = null; // { query, ranked } 供提示词生成
+
 function cosine(a, b) {
   let s = 0;
   for (let i = 0; i < a.length; i++) s += a[i] * b[i];
   return s; // 向量已归一化，点积即余弦
+}
+
+function renderResultItem(li, r, i) {
+  const meta = document.createElement('div');
+  meta.className = 'result-meta';
+  meta.textContent = t('src_fmt', { i: i + 1, file: r.chunk.fileName, idx: r.chunk.index + 1, score: r.score.toFixed(4) });
+  const text = document.createElement('div');
+  text.className = 'result-text clamped';
+  text.textContent = r.chunk.text;
+  text.addEventListener('click', () => text.classList.toggle('clamped'));
+  li.appendChild(meta);
+  li.appendChild(text);
 }
 
 $('btn-query').addEventListener('click', doQuery);
@@ -211,42 +238,80 @@ async function doQuery() {
   const TOP_K = 10;
 
   $('btn-query').disabled = true;
-  $('query-status').textContent = '检索中…';
+  $('query-status').textContent = t('querying');
   $('results').innerHTML = '';
   try {
     const [qv] = await embed([q], 'query: ');
     const all = await getAllChunksAndVectors();
     const valid = all.filter(x => x.vector && x.vector.length === qv.length);
     if (!valid.length) {
-      $('query-status').textContent = '文档库为空，请先导入 TXT 文件。';
+      $('query-status').textContent = t('lib_empty');
+      lastResults = null;
+      renderPrompt();
       return;
     }
     const ranked = valid
       .map(x => ({ chunk: x.chunk, score: cosine(qv, x.vector) }))
       .sort((a, b) => b.score - a.score)
       .slice(0, TOP_K);
+    lastResults = { query: q, ranked };
 
-    $('query-status').textContent = `库内共 ${valid.length} 个切片，以下为最相关的 ${ranked.length} 条：`;
+    $('query-status').textContent = t('results_fmt', { n: valid.length, m: ranked.length });
     const ol = $('results');
     ranked.forEach((r, i) => {
       const li = document.createElement('li');
-      const meta = document.createElement('div');
-      meta.className = 'result-meta';
-      meta.innerHTML = `#<b>${i + 1}</b>　相似度 <span class="score">${r.score.toFixed(4)}</span>　来源：${r.chunk.fileName}（第 ${r.chunk.index + 1} 片）`;
-      const text = document.createElement('div');
-      text.className = 'result-text clamped';
-      text.textContent = r.chunk.text;
-      text.addEventListener('click', () => text.classList.toggle('clamped'));
-      li.appendChild(meta);
-      li.appendChild(text);
+      renderResultItem(li, r, i);
       ol.appendChild(li);
     });
+    renderPrompt();
   } catch (err) {
-    $('query-status').textContent = '检索失败：' + err.message;
+    $('query-status').textContent = t('query_fail', { msg: err.message });
   }
   $('btn-query').disabled = false;
 }
 
+// ---------- 提示词区 ----------
+
+function buildPrompt(query, ranked) {
+  const ctx = ranked
+    .map((r, i) => t('src_fmt', { i: i + 1, file: r.chunk.fileName, idx: r.chunk.index + 1, score: r.score.toFixed(4) })
+      + '\n' + r.chunk.text)
+    .join('\n\n');
+  return t('prompt_tpl', { lang: t('lang_name'), ctx, q: query });
+}
+
+function renderPrompt() {
+  const box = $('prompt-box');
+  if (!lastResults || !lastResults.ranked.length) {
+    box.classList.add('hidden');
+    $('prompt-hint').classList.remove('hidden');
+    return;
+  }
+  $('prompt-hint').classList.add('hidden');
+  box.classList.remove('hidden');
+  $('prompt-pre').textContent = buildPrompt(lastResults.query, lastResults.ranked);
+  $('prompt-count').textContent = t('prompt_count', { n: lastResults.ranked.length });
+}
+
+$('btn-copy').addEventListener('click', async () => {
+  const text = $('prompt-pre').textContent;
+  const cs = $('copy-status');
+  try {
+    await navigator.clipboard.writeText(text);
+    cs.textContent = t('copied');
+  } catch {
+    // clipboard API 不可用（如非 https/localhost）时回退到选中复制
+    const range = document.createRange();
+    range.selectNodeContents($('prompt-pre'));
+    const sel = getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    cs.textContent = t('copy_fail');
+  }
+  setTimeout(() => { cs.textContent = ''; }, 3000);
+});
+
 // ---------- 初始化 ----------
 
+document.querySelector('title').textContent = t('title');
 refreshFileTable();

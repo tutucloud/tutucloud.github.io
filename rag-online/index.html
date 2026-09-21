@@ -7,18 +7,21 @@
 <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
-<h1>纯 Web 端 RAG 演示</h1>
-<p class="subtitle">模型、文档与向量全部保存在浏览器本地（Cache Storage + IndexedDB），无服务器。</p>
+<div class="header-row">
+  <h1 data-i18n="title">纯 Web 端 RAG 演示</h1>
+  <select id="lang-select" aria-label="Language"></select>
+</div>
+<p class="subtitle" data-i18n="subtitle">模型、文档与向量全部保存在浏览器本地（Cache Storage + IndexedDB），无服务器。</p>
 
 <section id="sec-model">
-  <h2>① 嵌入模型</h2>
+  <h2 data-i18n="sec_model">① 嵌入模型</h2>
   <div id="model-status" class="status">未加载</div>
   <div class="row">
-    <button id="btn-online">在线加载模型（multilingual-e5-small，约 130MB）</button>
-    <label class="file-label">选择模型文件夹（含子目录）
+    <button id="btn-online" data-i18n="btn_online">在线加载模型（multilingual-e5-small，约 130MB）</button>
+    <label class="file-label"><span data-i18n="label_model_dir">选择模型文件夹（含子目录）</span>
       <input type="file" id="input-model-dir" webkitdirectory>
     </label>
-    <label class="file-label">导入本地模型文件
+    <label class="file-label"><span data-i18n="label_model_files">导入本地模型文件</span>
       <input type="file" id="input-model" multiple>
     </label>
   </div>
@@ -26,35 +29,54 @@
     <div id="model-progress-label">下载中…</div>
     <progress id="model-progress" max="100" value="0"></progress>
   </div>
-  <p class="hint">推荐用"选择模型文件夹"一次导入整个模型目录（子目录自动包含，无关文件自动跳过）。必需文件：config.json、tokenizer.json、tokenizer_config.json，以及 onnx/model_quantized.onnx（或 onnx/model.onnx）。单文件上限 200MB。</p>
+  <p class="hint" data-i18n="model_hint">推荐用"选择模型文件夹"一次导入整个模型目录（子目录自动包含，无关文件自动跳过）。必需文件：config.json、tokenizer.json、tokenizer_config.json，以及 onnx/model_quantized.onnx（或 onnx/model.onnx）。单文件上限 200MB。</p>
 </section>
 
 <section id="sec-docs">
-  <h2>② 文档库（TXT）</h2>
+  <h2 data-i18n="sec_docs">② 文档库</h2>
   <div class="row">
-    <label class="file-label">选择多个文本文件（txt/md/csv/log/json/xml/html…）
+    <label class="file-label"><span data-i18n="label_docs">选择多个文本文件（txt/md/csv/log/json/xml/html…）</span>
       <input type="file" id="input-docs" multiple accept=".txt,.md,.markdown,.mdx,.csv,.tsv,.log,.json,.xml,.html,.htm,.srt,.vtt">
     </label>
-    <span id="docs-summary"></span>
+    <span id="docs-summary" class="status"></span>
   </div>
   <div id="docs-progress-wrap" class="progress-wrap hidden">
     <div id="docs-progress-label">处理中…</div>
     <progress id="docs-progress" max="100" value="0"></progress>
   </div>
   <table id="files-table" class="hidden">
-    <thead><tr><th>文件名</th><th>大小</th><th>切片数</th><th>状态</th><th></th></tr></thead>
+    <thead><tr>
+      <th data-i18n="th_file">文件名</th>
+      <th data-i18n="th_size">大小</th>
+      <th data-i18n="th_chunks">切片数</th>
+      <th data-i18n="th_state">状态</th>
+      <th></th>
+    </tr></thead>
     <tbody id="files-tbody"></tbody>
   </table>
 </section>
 
 <section id="sec-query">
-  <h2>③ 检索</h2>
+  <h2 data-i18n="sec_query">③ 检索</h2>
   <div class="row">
-    <input type="text" id="query-input" placeholder="输入问题，检索最相关的 10 个切片…" autocomplete="off">
-    <button id="btn-query">检索</button>
+    <input type="text" id="query-input" data-i18n-placeholder="query_ph" placeholder="输入问题，检索最相关的 10 个切片…" autocomplete="off">
+    <button id="btn-query" data-i18n="btn_query">检索</button>
   </div>
   <div id="query-status" class="status"></div>
   <ol id="results"></ol>
+</section>
+
+<section id="sec-prompt">
+  <h2 data-i18n="sec_prompt">④ 提示词</h2>
+  <div id="prompt-hint" class="status" data-i18n="prompt_hint">先在上方执行检索，即可生成可复制到其它 AI 的提示词。</div>
+  <div id="prompt-box" class="hidden">
+    <div class="row">
+      <button id="btn-copy" data-i18n="btn_copy">复制提示词</button>
+      <span id="copy-status" class="status"></span>
+      <span id="prompt-count" class="status"></span>
+    </div>
+    <pre id="prompt-pre" class="prompt-pre"></pre>
+  </div>
 </section>
 
 <script type="module" src="src/main.js"></script>
