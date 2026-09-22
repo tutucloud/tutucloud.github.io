@@ -3,30 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Tu-X — 项目展示与在线工具">
-  <title>Tu-X</title>
+  <meta name="description" content="Tu-X online tool — runs fully in your browser, no data leaves your device.">
+  <title>url — Tu-X Tools</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./assets/style.css?v=50c52cb3">
+  <link rel="stylesheet" href="../assets/style.css?v=50c52cb3">
 </head>
 <body>
   <div class="bg-glow" aria-hidden="true"></div>
 
   <header class="site-header">
     <div class="container header-inner">
-      <a class="logo" href="./">
+      <a class="logo" href="/">
         <span class="logo-mark">TX</span>
         <span class="logo-text">Tu-X</span>
       </a>
       <nav class="nav" id="nav">
         <div class="nav-item has-drop">
-          <a href="#projects" data-i18n="nav.projects"></a>
+          <a href="/#projects" data-i18n="nav.projects"></a>
           <div class="drop" id="drop-projects"></div>
         </div>
         <div class="nav-item has-drop">
-          <a href="#tools" data-i18n="nav.tools"></a>
+          <a href="/#tools" data-i18n="nav.tools"></a>
           <div class="drop" id="drop-tools"></div>
         </div>
-        <a href="#about" data-i18n="nav.about"></a>
+        <a href="/#about" data-i18n="nav.about"></a>
       </nav>
       <div class="header-actions">
         <button class="icon-btn" id="langBtn" title="Language" aria-label="Switch language">
@@ -45,50 +45,34 @@
   </header>
 
   <main>
-    <!-- Hero -->
-    <section class="hero">
-      <div class="container">
-        <p class="hero-eyebrow" data-i18n="hero.eyebrow"></p>
-        <h1 class="hero-title">
-          <span data-i18n="hero.title1"></span><br>
-          <span class="gradient-text" data-i18n="hero.title2"></span>
-        </h1>
-        <p class="hero-sub" data-i18n="hero.subtitle"></p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" href="#projects" data-i18n="hero.ctaProjects"></a>
-          <a class="btn btn-ghost" href="#tools" data-i18n="hero.ctaTools"></a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Projects -->
-    <section id="projects" class="section">
+    <section class="section">
       <div class="container">
         <div class="section-head">
-          <h2 data-i18n="projects.title"></h2>
-          <p data-i18n="projects.subtitle"></p>
-        </div>
-        <div class="grid" id="projectGrid"><!-- rendered by JS --></div>
-      </div>
-    </section>
-
-    <!-- Tools -->
-    <section id="tools" class="section section-alt">
-      <div class="container">
-        <div class="section-head">
-          <h2 data-i18n="tools.title"></h2>
+          <h1 data-i18n="tools.url.name"></h1>
           <p data-i18n="tools.subtitle"></p>
         </div>
 
-        <div class="grid" id="toolsGrid"><!-- rendered by JS --></div>
-      </div>
-    </section>
+<div class="tool-panel" data-panel="url">
+          <div class="tool-two-col">
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.url.encodeInput"></label>
+              <textarea id="urlPlain" class="tool-textarea" spellcheck="false"></textarea>
+              <div class="tool-actions">
+                <button class="btn btn-primary btn-sm" id="urlEncBtn" data-i18n="tools.url.encode"></button>
+              </div>
+            </div>
+            <div class="tool-col">
+              <label class="tool-label" data-i18n="tools.url.decodeInput"></label>
+              <textarea id="urlEncoded" class="tool-textarea" spellcheck="false"></textarea>
+              <div class="tool-actions">
+                <button class="btn btn-ghost btn-sm" id="urlDecBtn" data-i18n="tools.url.decode"></button>
+                <button class="btn btn-ghost btn-sm" id="urlCopyBtn" data-i18n="common.copy"></button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <!-- About -->
-    <section id="about" class="section">
-      <div class="container about-inner">
-        <h2 data-i18n="about.title"></h2>
-        <p data-i18n="about.body"></p>
+        <div class="tool-chips" id="toolChips"><!-- rendered by JS --></div>
       </div>
     </section>
   </main>
@@ -102,10 +86,10 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="./assets/i18n.js?v=2c1a3821"></script>
-  <script src="./assets/data.js?v=e9b1609b"></script>
-  <script src="./assets/qr.js?v=a260390b"></script>
-  <script src="./assets/app.js?v=a88ae4d5"></script>
-  <script src="./assets/tools.js?v=3717b4c6"></script>
+  <script src="../assets/i18n.js?v=2c1a3821"></script>
+  <script src="../assets/data.js?v=e9b1609b"></script>
+  <script src="../assets/qr.js?v=a260390b"></script>
+  <script src="../assets/app.js?v=a88ae4d5"></script>
+  <script src="../assets/tools.js?v=3717b4c6"></script>
 </body>
 </html>
