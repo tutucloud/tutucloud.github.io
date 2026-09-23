@@ -1,6 +1,6 @@
 {
-    "name": "fake_ai_agent",
-    "short_name": "fake_ai_agent",
+    "name": "fake_agent_game",
+    "short_name": "fake_agent_game",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
