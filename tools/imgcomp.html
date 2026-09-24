@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tu-X online tool — runs fully in your browser, no data leaves your device.">
-  <title>jwt — Tu-X Tools</title>
+  <title>imgcomp — Tu-X Tools</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="../assets/style.css?v=9b140d4f">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3853765839881693" crossorigin="anonymous"></script>
@@ -52,19 +52,27 @@
     <section class="section">
       <div class="container">
         <div class="section-head">
-          <h1 data-i18n="tools.jwt.name"></h1>
+          <h1 data-i18n="tools.imgcomp.name"></h1>
           <p data-i18n="tools.subtitle"></p>
         </div>
 
-<div class="tool-panel is-active" data-panel="jwt">
-          <label class="tool-label" data-i18n="tools.jwt.input"></label>
-          <textarea id="jwtInput" class="tool-textarea tool-textarea-sm" spellcheck="false" placeholder="eyJhbGciOiJIUzI1NiIs..."></textarea>
+<div class="tool-panel is-active" data-panel="imgcomp">
+          <label class="tool-label" data-i18n="tools.imgcomp.pick"></label>
+          <input id="imgCompInput" type="file" accept="image/png,image/jpeg,image/webp">
+          <label class="tool-label" data-i18n="tools.imgcomp.quality"></label>
+          <input id="imgCompQuality" class="tool-input" type="range" min="10" max="100" value="80">
+          <label class="tool-label" data-i18n="tools.imgcomp.maxside"></label>
+          <input id="imgCompMaxSide" class="tool-input" type="number" value="1920" spellcheck="false">
+          <label class="tool-label" data-i18n="tools.imgcomp.type"></label>
+          <select id="imgCompType" class="tool-input">
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/webp">WebP</option>
+          </select>
           <div class="tool-actions">
-            <button class="btn btn-primary btn-sm" id="jwtBtn" data-i18n="tools.jwt.decode"></button>
+            <button class="btn btn-primary btn-sm" id="imgCompBtn" data-i18n="tools.imgcomp.compress"></button>
           </div>
-          <div id="jwtHeader" class="jwt-section" style="display:none"></div>
-          <div id="jwtPayload" class="jwt-section" style="display:none"></div>
-          <div id="jwtSignature" class="jwt-section" style="display:none"></div>
+          <p class="qr-note" data-i18n="tools.imgcomp.note"></p>
+          <div id="imgCompOut"></div>
         </div>
 
         <div class="tool-chips" id="toolChips"><!-- rendered by JS --></div>

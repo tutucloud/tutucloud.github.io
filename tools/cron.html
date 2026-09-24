@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tu-X online tool — runs fully in your browser, no data leaves your device.">
-  <title>jwt — Tu-X Tools</title>
+  <title>cron — Tu-X Tools</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="../assets/style.css?v=9b140d4f">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3853765839881693" crossorigin="anonymous"></script>
@@ -52,19 +52,17 @@
     <section class="section">
       <div class="container">
         <div class="section-head">
-          <h1 data-i18n="tools.jwt.name"></h1>
+          <h1 data-i18n="tools.cron.name"></h1>
           <p data-i18n="tools.subtitle"></p>
         </div>
 
-<div class="tool-panel is-active" data-panel="jwt">
-          <label class="tool-label" data-i18n="tools.jwt.input"></label>
-          <textarea id="jwtInput" class="tool-textarea tool-textarea-sm" spellcheck="false" placeholder="eyJhbGciOiJIUzI1NiIs..."></textarea>
+<div class="tool-panel is-active" data-panel="cron">
+          <label class="tool-label" data-i18n="tools.cron.input"></label>
+          <input id="cronInput" class="tool-input" placeholder="*/5 9-18 * * 1-5" spellcheck="false">
           <div class="tool-actions">
-            <button class="btn btn-primary btn-sm" id="jwtBtn" data-i18n="tools.jwt.decode"></button>
+            <button class="btn btn-primary btn-sm" id="cronBtn" data-i18n="tools.cron.parse"></button>
           </div>
-          <div id="jwtHeader" class="jwt-section" style="display:none"></div>
-          <div id="jwtPayload" class="jwt-section" style="display:none"></div>
-          <div id="jwtSignature" class="jwt-section" style="display:none"></div>
+          <div id="cronResults" class="hash-results"></div>
         </div>
 
         <div class="tool-chips" id="toolChips"><!-- rendered by JS --></div>
