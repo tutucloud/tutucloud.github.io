@@ -1,0 +1,12 @@
+# Cloudflare Pages 响应头配置
+# 注意：_headers 只能附加响应头，无法阻止访问（403/404 需在 CF 控制台
+# 修改构建输出目录、或用 WAF 规则 / _worker.js 实现）。
+# 这里对 .git 及敏感路径做搜索引擎排除，并加固全站安全头。
+
+/.git/*
+  X-Robots-Tag: noindex, nofollow
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
