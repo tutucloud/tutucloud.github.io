@@ -1,10 +1,11 @@
 // POST /api/ai/chat 的处理函数（由 src/index.js 路由调用）。
-// 代理调用 Workers AI（免费额度，前端无需配置密钥）。
+// 代理调用 Workers AI（默认 Qwen3-30B-A3B-FP8，前端无需配置密钥）。
 // 请求：{ messages: [{ role, content }...], max_tokens? }
 // 响应：{ ok: true, text } 或 { ok: false, error }
-const MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8";
-// 允许前端按工具指定模型（白名单），默认小 Llama；中文任务建议用 Qwen 系
+const MODEL = "@cf/qwen/qwen3-30b-a3b-fp8";
+// 允许前端按工具指定模型（白名单）；默认 Qwen3-30B（中文好、价格与 8B Llama 相近）
 const MODEL_ALLOW = new Set([
+  "@cf/qwen/qwen3-30b-a3b-fp8",
   "@cf/meta/llama-3.1-8b-instruct-fp8",
   "@cf/qwen/qwen2.5-coder-32b-instruct",
 ]);
