@@ -1,14 +1,13 @@
-// POST /api/ai/chat
-// Cloudflare Pages Functions：代理调用 Workers AI（免费额度，无需前端配置密钥）。
+// POST /api/ai/chat 的处理函数（由 src/index.js 路由调用）。
+// 代理调用 Workers AI（免费额度，前端无需配置密钥）。
 // 请求：{ messages: [{ role, content }...], max_tokens? }
 // 响应：{ ok: true, text } 或 { ok: false, error }
 const MODEL = "@cf/meta/llama-3-8b-instruct";
 
-export async function onRequestPost(context) {
-  const { request, env } = context;
+export async function handleChat(request, env) {
   if (!env.AI) {
     return Response.json(
-      { ok: false, error: "Workers AI binding (AI) is not enabled for this Pages project." },
+      { ok: false, error: "Workers AI binding (AI) is not enabled. Add \"ai\": { \"binding\": \"AI\" } to wrangler.jsonc." },
       { status: 500 },
     );
   }
