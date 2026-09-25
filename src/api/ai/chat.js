@@ -3,6 +3,12 @@
 // 请求：{ messages: [{ role, content }...], max_tokens? }
 // 响应：{ ok: true, text } 或 { ok: false, error }
 const MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8";
+// 允许前端按工具指定模型（白名单），默认小 Llama；中文任务建议用 Qwen 系
+const MODEL_ALLOW = new Set([
+  "@cf/meta/llama-3.1-8b-instruct-fp8",
+  "@cf/qwen/qwen3-30b-a3b-fp8",
+  "@cf/qwen/qwen2.5-coder-32b-instruct",
+]);
 
 export async function handleChat(request, env) {
   if (!env.AI) {
@@ -31,7 +37,8 @@ export async function handleChat(request, env) {
 
   try {
     const result = await env.AI.run(MODEL, {
-      messages,
+      messages: messages,
+      model: typeof body.model === "string" && MODEL_ALLOW.has(body.model) ? body.model : MODEL,
       max_tokens: typeof body.max_tokens === "number" ? Math.min(body.max_tokens, 2048) : 1024,
     });
     const text = typeof result === "string" ? result : result.response;
