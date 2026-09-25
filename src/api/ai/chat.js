@@ -6,7 +6,6 @@ const MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8";
 // 允许前端按工具指定模型（白名单），默认小 Llama；中文任务建议用 Qwen 系
 const MODEL_ALLOW = new Set([
   "@cf/meta/llama-3.1-8b-instruct-fp8",
-  "@cf/qwen/qwen3-30b-a3b-fp8",
   "@cf/qwen/qwen2.5-coder-32b-instruct",
 ]);
 
