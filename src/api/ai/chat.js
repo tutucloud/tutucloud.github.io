@@ -36,9 +36,10 @@ export async function handleChat(request, env) {
   }
 
   try {
-    const result = await env.AI.run(MODEL, {
-      messages: messages,
-      model: typeof body.model === "string" && MODEL_ALLOW.has(body.model) ? body.model : MODEL,
+    const model = typeof body.model === "string" && MODEL_ALLOW.has(body.model)
+      ? body.model : MODEL;
+    const result = await env.AI.run(model, {
+      messages,
       max_tokens: typeof body.max_tokens === "number" ? Math.min(body.max_tokens, 2048) : 1024,
     });
     const text = typeof result === "string" ? result : result.response;
