@@ -88,16 +88,27 @@
     <div class="container footer-inner">
       <span>© <span id="year"></span> Tu-X</span>
       <a class="footer-note" href="mailto:feedbacktu-xcom@googlegroups.com" data-i18n="footer.feedback"></a>
+      <a class="footer-note" id="pricingLink" href="/pricing/" data-i18n="pricing.navlink" style="display:none"></a>
       <span class="footer-note" data-i18n="footer.note"></span>
     </div>
   </footer>
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script src="../assets/i18n.js?v=3d1441c0"></script>
+  <script src="../assets/i18n.js?v=9cf7c79e"></script>
   <script src="../assets/data.js?v=70716161"></script>
   <script src="../assets/qr.js?v=a260390b"></script>
   <script src="../assets/app.js?v=89e7e725"></script>
   <script src="../assets/tools.js?v=bed3b5d9"></script>
+
+  <script>
+    // 价格页入口仅在正式域名下显示
+    (function () {
+      if (location.hostname === 'tu-x.com') {
+        var el = document.getElementById('pricingLink');
+        if (el) el.style.display = '';
+      }
+    })();
+  </script>
 </body>
 </html>
