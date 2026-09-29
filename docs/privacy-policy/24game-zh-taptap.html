@@ -40,7 +40,7 @@
     <ol>
       <li><span class="highlight">登录与身份识别</span>：当您使用 TapTap 登录本游戏时，TapTap SDK 会向我们提供您的 TapTap 开放标识（openId）与登录令牌，用于识别您的游戏身份。我们不收集您的 TapTap 账号昵称、头像、手机号码等信息。</li>
       <li><span class="highlight">实名认证与防沉迷</span>：为履行法定实名认证与防沉迷义务，本游戏通过 TapTap 合规认证服务完成您的实名核验与年龄识别。您的姓名、身份证件号码等实名信息由 TapTap 平台核验，本游戏不收集、不存储上述实名细节，仅接收核验结果（是否成年、年龄段）用于防沉迷管理。如您不完成实名认证，依据法规您将无法进入游戏。</li>
-      <li><span class="highlight">设备与安全信息</span>：为保障服务安全、防范作弊与盗版，TapTap SDK 会按其自身政策收集设备标识信息（如设备 ID、设备型号、操作系统版本等）。</li>
+      <li><span class="highlight">设备与安全信息</span>：为保障服务安全、防范作弊与盗版，TapTap SDK 会按其自身政策收集设备标识信息（<span class="highlight">AndroidID</span>）与设备参数信息（设备型号、操作系统版本、设备 CPU 信息、设备内存信息），并获取网络类型与网络连接状态。此外，本游戏会检测您设备上是否安装了 TapTap 客户端（仅读取安装状态，不读取其他应用列表）。</li>
       <li><span class="highlight">本地数据</span>：您的游戏偏好设置与最佳成绩仅保存在您的设备本地，我们无法访问，您可随时通过系统设置清除应用数据将其删除。</li>
     </ol>
 
@@ -48,6 +48,7 @@
     <table>
       <tr><th>设备权限</th><th>调用权限的目的</th><th>是否询问</th><th>用户可否关闭</th></tr>
       <tr><td>网络</td><td>连接网络（登录、实名认证与防沉迷服务）</td><td>是</td><td>可（关闭后将无法进入游戏）</td></tr>
+      <tr><td>获取网络状态</td><td>检测网络连接是否有效（TapTap SDK 判断登录与防沉迷服务可用性）</td><td>否（普通权限）</td><td>—</td></tr>
     </table>
 
     <h2>三、我们如何委托处理信息</h2>
@@ -57,9 +58,9 @@
     <table>
       <tr><th>SDK 名称</th><th>使用目的</th><th>收集的信息</th><th>隐私政策</th></tr>
       <tr>
-        <td>TapTap SDK</td>
+        <td>TapTap SDK（TapTap 登录 SDK 及合规认证模块）</td>
         <td>账号登录、实名认证、防沉迷时长与时段管理</td>
-        <td>设备标识信息、openId、登录令牌、游戏时长数据</td>
+        <td><span class="highlight">AndroidID</span>（设备标识符）、设备型号、操作系统版本、设备 CPU 信息、设备内存信息、网络类型与网络状态、是否安装 TapTap 客户端、openId、登录令牌、游戏时长数据</td>
         <td>受 TapTap 平台公示的隐私政策约束</td>
       </tr>
     </table>
