@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tu-X online tool — runs fully in your browser, no data leaves your device.">
-  <title>diff — Tu-X Tools</title>
+  <title>datecalc — Tu-X Tools</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="../assets/style.css?v=c439f7f0">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3853765839881693" crossorigin="anonymous"></script>
@@ -56,23 +56,35 @@
     <section class="section">
       <div class="container">
         <div class="section-head">
-          <h1 data-i18n="tools.diff.name"></h1>
+          <h1 data-i18n="tools.datecalc.name"></h1>
           <p data-i18n="tools.subtitle"></p>
         </div>
 
-<div class="tool-panel is-active" data-panel="diff">
+<div class="tool-panel is-active" data-panel="datecalc">
           <div class="tool-two-col">
             <div class="tool-col">
-              <label class="tool-label" data-i18n="tools.diff.left"></label>
-              <textarea id="diffLeft" class="tool-textarea tool-textarea-sm" spellcheck="false"></textarea>
+              <label class="tool-label" data-i18n="tools.datecalc.diff"></label>
+              <label class="tool-label" data-i18n="tools.datecalc.start"></label>
+              <input id="dateDiffStart" class="tool-input" type="date">
+              <label class="tool-label" data-i18n="tools.datecalc.end"></label>
+              <input id="dateDiffEnd" class="tool-input" type="date">
+              <div class="tool-actions">
+                <button class="btn btn-primary btn-sm" id="dateDiffBtn" data-i18n="tools.datecalc.calc"></button>
+              </div>
+              <div id="dateDiffOut" class="hash-results"></div>
             </div>
             <div class="tool-col">
-              <label class="tool-label" data-i18n="tools.diff.right"></label>
-              <textarea id="diffRight" class="tool-textarea tool-textarea-sm" spellcheck="false"></textarea>
+              <label class="tool-label" data-i18n="tools.datecalc.add"></label>
+              <label class="tool-label" data-i18n="tools.datecalc.base"></label>
+              <input id="dateAddBase" class="tool-input" type="date">
+              <label class="tool-label" data-i18n="tools.datecalc.days"></label>
+              <input id="dateAddDays" class="tool-input" type="number" placeholder="30 / -7" spellcheck="false">
+              <div class="tool-actions">
+                <button class="btn btn-primary btn-sm" id="dateAddBtn" data-i18n="tools.datecalc.calc"></button>
+              </div>
+              <div id="dateAddOut" class="hash-results"></div>
             </div>
           </div>
-          <div class="tool-actions"><button class="btn btn-primary btn-sm" id="diffBtn" data-i18n="tools.diff.compare"></button></div>
-          <pre id="diffOut" class="tool-pre diff-pre"></pre>
         </div>
 
         <div class="tool-chips" id="toolChips"><!-- rendered by JS --></div>
@@ -97,7 +109,7 @@
   <div class="toast" id="toast" role="status"></div>
 
   <script src="../assets/i18n.js?v=b8c9bc5a"></script>
-  <script src="../assets/data.js?v=70716161"></script>
+  <script src="../assets/data.js?v=8f82e52a"></script>
   <script src="../assets/qr.js?v=a260390b"></script>
   <script src="../assets/app.js?v=89e7e725"></script>
   <script src="../assets/tools.js?v=bed3b5d9"></script>

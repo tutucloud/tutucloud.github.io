@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tu-X online tool — runs fully in your browser, no data leaves your device.">
-  <title>minify — Tu-X Tools</title>
+  <title>regex — Tu-X Tools</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="../assets/style.css?v=c439f7f0">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3853765839881693" crossorigin="anonymous"></script>
@@ -56,28 +56,21 @@
     <section class="section">
       <div class="container">
         <div class="section-head">
-          <h1 data-i18n="tools.minify.name"></h1>
+          <h1 data-i18n="tools.regex.name"></h1>
           <p data-i18n="tools.subtitle"></p>
         </div>
 
-<div class="tool-panel is-active" data-panel="minify">
-          <div class="tool-two-col">
-            <div class="tool-col">
-              <label class="tool-label" data-i18n="tools.minify.input"></label>
-              <textarea id="minifyInput" class="tool-textarea" spellcheck="false"></textarea>
-            </div>
-            <div class="tool-col">
-              <label class="tool-label" data-i18n="tools.minify.output"></label>
-              <textarea id="minifyOutput" class="tool-textarea" spellcheck="false" readonly></textarea>
-            </div>
+<div class="tool-panel is-active" data-panel="regex">
+          <div class="color-row">
+            <span class="tool-label" style="margin:0">/</span>
+            <input id="regexPattern" class="tool-input" placeholder="\\d+" spellcheck="false">
+            <span class="tool-label" style="margin:0">/</span>
+            <input id="regexFlags" class="tool-input tool-input-flags" value="g" spellcheck="false">
+            <button class="btn btn-primary btn-sm" id="regexBtn" data-i18n="tools.regex.test"></button>
           </div>
-          <div class="tool-actions">
-            <button class="btn btn-primary btn-sm" id="cssMinBtn" data-i18n="tools.minify.cssMin"></button>
-            <button class="btn btn-ghost btn-sm" id="cssPrettyBtn" data-i18n="tools.minify.cssPretty"></button>
-            <button class="btn btn-ghost btn-sm" id="jsPrettyBtn" data-i18n="tools.minify.jsPretty"></button>
-            <button class="btn btn-ghost btn-sm" id="minifyCopyBtn" data-i18n="common.copy"></button>
-          </div>
-          <p class="qr-note" data-i18n="tools.minify.note"></p>
+          <label class="tool-label" data-i18n="tools.regex.text"></label>
+          <textarea id="regexText" class="tool-textarea tool-textarea-sm" spellcheck="false"></textarea>
+          <pre id="regexOut" class="tool-pre" style="min-height:80px"></pre>
         </div>
 
         <div class="tool-chips" id="toolChips"><!-- rendered by JS --></div>
@@ -102,7 +95,7 @@
   <div class="toast" id="toast" role="status"></div>
 
   <script src="../assets/i18n.js?v=b8c9bc5a"></script>
-  <script src="../assets/data.js?v=70716161"></script>
+  <script src="../assets/data.js?v=8f82e52a"></script>
   <script src="../assets/qr.js?v=a260390b"></script>
   <script src="../assets/app.js?v=89e7e725"></script>
   <script src="../assets/tools.js?v=bed3b5d9"></script>

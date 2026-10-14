@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tu-X online tool — runs fully in your browser, no data leaves your device.">
-  <title>translate — Tu-X AI</title>
+  <title>urlparse — Tu-X Tools</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="../assets/style.css?v=c439f7f0">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3853765839881693" crossorigin="anonymous"></script>
 </head>
-<body data-ai-tool="translate">
+<body>
   <div class="bg-glow" aria-hidden="true"></div>
 
   <header class="site-header">
@@ -56,31 +56,18 @@
     <section class="section">
       <div class="container">
         <div class="section-head">
-          <h1 data-i18n="ai.translate.name"></h1>
-          <p data-i18n="ai.subtitle"></p>
+          <h1 data-i18n="tools.urlparse.name"></h1>
+          <p data-i18n="tools.subtitle"></p>
         </div>
 
-<div class="ai-notice" data-i18n="ai.notice"></div>
-
-        <label class="tool-label" data-i18n="ai.translate.input"></label>
-        <textarea id="aiTranslateInput" class="tool-textarea tool-textarea-sm" spellcheck="false"></textarea>
-        <div class="tool-actions">
-          <label class="tool-label" style="margin:0;align-self:center" data-i18n="ai.translate.target"></label>
-          <select id="aiTranslateLang" class="tool-input" style="width:auto;flex:none">
-            <option value="English">English</option>
-            <option value="Simplified Chinese">简体中文</option>
-            <option value="Traditional Chinese">繁體中文</option>
-            <option value="Japanese">日本語</option>
-            <option value="Korean">한국어</option>
-            <option value="French">Français</option>
-            <option value="German">Deutsch</option>
-            <option value="Spanish">Español</option>
-          </select>
-          <button class="btn btn-primary btn-sm" id="aiTranslateBtn" data-i18n="ai.translate.go"></button>
+<div class="tool-panel is-active" data-panel="urlparse">
+          <label class="tool-label" data-i18n="tools.urlparse.input"></label>
+          <input id="urlParseInput" class="tool-input" placeholder="https://example.com/path?a=1&b=2#top" spellcheck="false">
+          <div class="tool-actions">
+            <button class="btn btn-primary btn-sm" id="urlParseBtn" data-i18n="tools.urlparse.parse"></button>
+          </div>
+          <div id="urlParseResults" class="hash-results"></div>
         </div>
-        <label class="tool-label" data-i18n="ai.translate.output"></label>
-        <div id="aiTranslateOut"></div>
-        <div class="tool-chips" id="aiChips"><!-- rendered by JS --></div>
 
         <div class="tool-chips" id="toolChips"><!-- rendered by JS --></div>
       </div>
@@ -97,17 +84,17 @@
       <a class="footer-note" href="/legal/privacy.html" data-i18n="legal.privacy.title"></a>
       <a class="footer-note" href="/legal/refund.html" data-i18n="legal.refund.title"></a>
     </span>
-      <span class="footer-note" data-i18n="footer.note.ai"></span>
+      <span class="footer-note" data-i18n="footer.note"></span>
     </div>
   </footer>
 
   <div class="toast" id="toast" role="status"></div>
 
   <script src="../assets/i18n.js?v=b8c9bc5a"></script>
-  <script src="../assets/data.js?v=70716161"></script>
+  <script src="../assets/data.js?v=8f82e52a"></script>
   <script src="../assets/qr.js?v=a260390b"></script>
   <script src="../assets/app.js?v=89e7e725"></script>
-  <script src="../assets/ai-tools.js?v=7f338fcb"></script>
+  <script src="../assets/tools.js?v=bed3b5d9"></script>
 
   <script>
     // 价格页入口仅在正式域名下显示

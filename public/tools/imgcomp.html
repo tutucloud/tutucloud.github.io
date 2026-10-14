@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tu-X online tool — runs fully in your browser, no data leaves your device.">
-  <title>base64 — Tu-X Tools</title>
+  <title>imgcomp — Tu-X Tools</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="../assets/style.css?v=c439f7f0">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3853765839881693" crossorigin="anonymous"></script>
@@ -56,28 +56,27 @@
     <section class="section">
       <div class="container">
         <div class="section-head">
-          <h1 data-i18n="tools.base64.name"></h1>
+          <h1 data-i18n="tools.imgcomp.name"></h1>
           <p data-i18n="tools.subtitle"></p>
         </div>
 
-<div class="tool-panel is-active" data-panel="base64">
-          <div class="tool-two-col">
-            <div class="tool-col">
-              <label class="tool-label" data-i18n="tools.base64.encodeInput"></label>
-              <textarea id="b64Plain" class="tool-textarea" spellcheck="false"></textarea>
-              <div class="tool-actions">
-                <button class="btn btn-primary btn-sm" id="b64EncBtn" data-i18n="tools.base64.encode"></button>
-              </div>
-            </div>
-            <div class="tool-col">
-              <label class="tool-label" data-i18n="tools.base64.decodeInput"></label>
-              <textarea id="b64Encoded" class="tool-textarea" spellcheck="false"></textarea>
-              <div class="tool-actions">
-                <button class="btn btn-ghost btn-sm" id="b64DecBtn" data-i18n="tools.base64.decode"></button>
-                <button class="btn btn-ghost btn-sm" id="b64CopyBtn" data-i18n="common.copy"></button>
-              </div>
-            </div>
+<div class="tool-panel is-active" data-panel="imgcomp">
+          <label class="tool-label" data-i18n="tools.imgcomp.pick"></label>
+          <input id="imgCompInput" type="file" accept="image/png,image/jpeg,image/webp">
+          <label class="tool-label" data-i18n="tools.imgcomp.quality"></label>
+          <input id="imgCompQuality" class="tool-input" type="range" min="10" max="100" value="80">
+          <label class="tool-label" data-i18n="tools.imgcomp.maxside"></label>
+          <input id="imgCompMaxSide" class="tool-input" type="number" value="1920" spellcheck="false">
+          <label class="tool-label" data-i18n="tools.imgcomp.type"></label>
+          <select id="imgCompType" class="tool-input">
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+          <div class="tool-actions">
+            <button class="btn btn-primary btn-sm" id="imgCompBtn" data-i18n="tools.imgcomp.compress"></button>
           </div>
+          <p class="qr-note" data-i18n="tools.imgcomp.note"></p>
+          <div id="imgCompOut"></div>
         </div>
 
         <div class="tool-chips" id="toolChips"><!-- rendered by JS --></div>
@@ -102,7 +101,7 @@
   <div class="toast" id="toast" role="status"></div>
 
   <script src="../assets/i18n.js?v=b8c9bc5a"></script>
-  <script src="../assets/data.js?v=70716161"></script>
+  <script src="../assets/data.js?v=8f82e52a"></script>
   <script src="../assets/qr.js?v=a260390b"></script>
   <script src="../assets/app.js?v=89e7e725"></script>
   <script src="../assets/tools.js?v=bed3b5d9"></script>
