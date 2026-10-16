@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://tu-x.com/sitemap.xml
